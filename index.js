@@ -1,31 +1,8 @@
-import { SvelteComponent, create_slot, assign, element, set_attributes, insert, update_slot_base, get_all_dirty_from_scope, get_slot_changes, get_spread_update, transition_in, transition_out, detach, compute_rest_props, exclude_internal_props, safe_not_equal, init, listen, stop_propagation, self, trusted, bubble, run_all } from 'svelte/internal';
-export function createSSC(tag, style, events) {
+import { SvelteComponent, create_slot, assign, element, set_attributes, insert, update_slot_base, get_all_dirty_from_scope, get_slot_changes, get_spread_update, transition_in, transition_out, detach, compute_rest_props, exclude_internal_props, safe_not_equal, init, listen, bubble, run_all } from 'svelte/internal';
+export function createSSC(tag, generateStyle, events) {
     function createEvents(div, ctx, events) {
         return events.map((event, index) => {
-            let getMe = (me) => me;
-            if (event.stopPropagation) {
-                getMe = (me) => stop_propagation(getMe(me));
-            }
-            if (event.self) {
-                getMe = (me) => self(getMe(me));
-            }
-            if (event.trusted) {
-                getMe = (me) => trusted(getMe(me));
-            }
-            const options = {};
-            if (event.passive) {
-                options.passive = true;
-            }
-            else if (event.passive === false) {
-                options.passive = false;
-            }
-            if (event.once) {
-                options.once = true;
-            }
-            if (event.capture) {
-                options.capture = true;
-            }
-            return listen(div, event.name, getMe(ctx[3 + index]), options);
+            return listen(div, event, ctx[4 + index], true);
         });
     }
     function create_fragment(ctx) {
@@ -33,11 +10,13 @@ export function createSSC(tag, style, events) {
         let current;
         let mounted;
         let dispose;
-        const default_slot_template = (ctx[2].default);
-        const default_slot = create_slot(default_slot_template, ctx, ctx[1], null);
+        const default_slot_template = (ctx[3].default);
+        const default_slot = create_slot(default_slot_template, ctx, ctx[2], null);
         let div_levels = [
-            { style },
-            ctx[0]
+            {
+                style: (ctx[0])
+            },
+            ctx[1]
         ];
         let div_data = {};
         for (let i = 0; i < div_levels.length; i += 1) {
@@ -64,13 +43,19 @@ export function createSSC(tag, style, events) {
             p(ctx2, [dirty]) {
                 if (default_slot) {
                     if (default_slot.p && (!current || dirty &
-                        2)) {
-                        update_slot_base(default_slot, default_slot_template, ctx2, ctx2[1], !current ? get_all_dirty_from_scope(ctx2[1]) : get_slot_changes(default_slot_template, ctx2[1], dirty, null), null);
+                        4)) {
+                        update_slot_base(default_slot, default_slot_template, ctx2, ctx2[2], !current ? get_all_dirty_from_scope(ctx2[2]) : get_slot_changes(default_slot_template, ctx2[2], dirty, null), null);
                     }
                 }
-                set_attributes(div, div_data = get_spread_update(div_levels, [{ style }, dirty &
-                        1 &&
-                        ctx2[0]]));
+                set_attributes(div, div_data = get_spread_update(div_levels, [
+                    (!current || dirty &
+                        1) && {
+                        style: (ctx2[0])
+                    },
+                    dirty &
+                        2 &&
+                        ctx2[1]
+                ]));
             },
             i(local) {
                 if (current)
@@ -94,14 +79,18 @@ export function createSSC(tag, style, events) {
         };
     }
     function instance($$self, $$props, $$invalidate) {
+        let style;
         const omit_props_names = [];
         let $$restProps = compute_rest_props($$props, omit_props_names);
         let { $$slots: slots = {}, $$scope } = $$props;
         $$self.$$set = ($$new_props) => {
             $$props = assign(assign({}, $$props), exclude_internal_props($$new_props));
-            $$invalidate(0, $$restProps = compute_rest_props($$props, omit_props_names));
+            $$invalidate(1, $$restProps = compute_rest_props($$props, omit_props_names));
             if ("$$scope" in $$new_props)
-                $$invalidate(1, $$scope = $$new_props.$$scope);
+                $$invalidate(2, $$scope = $$new_props.$$scope);
+        };
+        $$self.$$.update = () => {
+            $: $$invalidate(0, style = generateStyle($$restProps));
         };
         if (events) {
             const handlers = [];
@@ -110,10 +99,10 @@ export function createSSC(tag, style, events) {
                     bubble.call(this, $$self, event);
                 });
             }
-            return [$$restProps, $$scope, slots, ...handlers];
+            return [style, $$restProps, $$scope, slots, ...handlers];
         }
         else {
-            return [$$restProps, $$scope, slots];
+            return [style, $$restProps, $$scope, slots];
         }
     }
     class StyledComponent extends SvelteComponent {

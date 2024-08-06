@@ -9,7 +9,7 @@ export interface StyledComponentEvent {
     self?: boolean;
     trusted?: boolean;
 }
-export declare function createSSC(tag: keyof HTMLElementTagNameMap, style: string, events?: StyledComponentEvent[]): {
+export declare function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (props: any) => string, events?: string[]): {
     new (options: {
         target: any;
         props?: any;
