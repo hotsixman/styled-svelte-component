@@ -12,7 +12,8 @@ export interface StyledComponentEvent {
     self?: boolean;
     trusted?: boolean;
 }
-export function createSSC(tag: keyof HTMLElementTagNameMap, style: string, events?: StyledComponentEvent[]) {
+export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (props: any) => string, events?: string[]) {
+    /*
     function createEvents(div: any, ctx: any, events: StyledComponentEvent[]) {
         return events.map((event, index) => {
             let getMe = (me) => me;
@@ -40,7 +41,13 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, style: string, event
                 options.capture = true;
             }
 
-            return listen(div, event.name, getMe(ctx[3 + index]), options)
+            return listen(div, event.name, getMe(ctx[4 + index]), options)
+        })
+    }
+    */
+    function createEvents(div: any, ctx: any, events: string[]) {
+        return events.map((event, index) => {
+            return listen(div, event, ctx[4 + index], true)
         })
     }
 
@@ -51,19 +58,24 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, style: string, event
         let dispose;
         const default_slot_template = (
             /*#slots*/
-            ctx[2].default
+            ctx[3].default
         );
         const default_slot = create_slot(
             default_slot_template,
             ctx,
             /*$$scope*/
-            ctx[1],
+            ctx[2],
             null
         );
         let div_levels = [
-            { style },
+            {
+                style: (
+                    /*style*/
+                    ctx[0]
+                )
+            },
             /*$$restProps*/
-            ctx[0]
+            ctx[1]
         ];
         let div_data = {};
         for (let i = 0; i < div_levels.length; i += 1) {
@@ -89,20 +101,20 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, style: string, event
             p(ctx2, [dirty]) {
                 if (default_slot) {
                     if (default_slot.p && (!current || dirty & /*$$scope*/
-                        2)) {
+                        4)) {
                         update_slot_base(
                             default_slot,
                             default_slot_template,
                             ctx2,
                             /*$$scope*/
-                            ctx2[1],
+                            ctx2[2],
                             !current ? get_all_dirty_from_scope(
                                 /*$$scope*/
-                                ctx2[1]
+                                ctx2[2]
                             ) : get_slot_changes(
                                 default_slot_template,
                                 /*$$scope*/
-                                ctx2[1],
+                                ctx2[2],
                                 dirty,
                                 null
                             ),
@@ -110,9 +122,18 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, style: string, event
                         );
                     }
                 }
-                set_attributes(div, div_data = get_spread_update(div_levels, [{ style }, dirty & /*$$restProps*/
-                    1 && /*$$restProps*/
-                    ctx2[0]]));
+                set_attributes(div, div_data = get_spread_update(div_levels, [
+                    (!current || dirty & /*style*/
+                        1) && {
+                        style: (
+                            /*style*/
+                            ctx2[0]
+                        )
+                    },
+                    dirty & /*$$restProps*/
+                    2 && /*$$restProps*/
+                    ctx2[1]
+                ]));
             },
             i(local) {
                 if (current) return;
@@ -135,26 +156,31 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, style: string, event
     }
 
     function instance($$self, $$props, $$invalidate) {
+        let style;
         const omit_props_names = [];
         let $$restProps = compute_rest_props($$props, omit_props_names);
         let { $$slots: slots = {}, $$scope } = $$props;
+
         $$self.$$set = ($$new_props) => {
             $$props = assign(assign({}, $$props), exclude_internal_props($$new_props));
-            $$invalidate(0, $$restProps = compute_rest_props($$props, omit_props_names));
-            if ("$$scope" in $$new_props) $$invalidate(1, $$scope = $$new_props.$$scope);
+            $$invalidate(1, $$restProps = compute_rest_props($$props, omit_props_names));
+            if ("$$scope" in $$new_props) $$invalidate(2, $$scope = $$new_props.$$scope);
         };
-        
-        if(events){
+        $$self.$$.update = () => {
+            $: $$invalidate(0, style = generateStyle($$restProps));
+        };
+
+        if (events) {
             const handlers: any[] = [];
-            for(let i = 0; i < events.length; i++){
-                handlers.push(function(event){
+            for (let i = 0; i < events.length; i++) {
+                handlers.push(function (event) {
                     bubble.call(this, $$self, event);
                 })
             }
-            return [$$restProps, $$scope, slots, ...handlers]
+            return [style, $$restProps, $$scope, slots, ...handlers]
         }
-        else{
-            return [$$restProps, $$scope, slots];
+        else {
+            return [style, $$restProps, $$scope, slots];
         }
     }
 
