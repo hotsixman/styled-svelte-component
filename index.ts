@@ -135,7 +135,7 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
             c() {
                 key_block.c();
                 t = space();
-                div = element("div");
+                div = element(tag);
                 if (default_slot) default_slot.c();
                 set_attributes(div, div_data);
             },

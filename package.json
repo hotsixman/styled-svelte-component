@@ -1,6 +1,6 @@
 {
   "name": "styled-svelte-component",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Create style components for svelte",
   "main": "./index.js",
   "type": "module",
