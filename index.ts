@@ -120,7 +120,7 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
         );
         let div_levels = [
             {
-                class: div_class_value = `svelte-${/*hash*/
+                class: div_class_value = `styled-svelte-${/*hash*/
                     ctx[1]} ` + /*$$restProps*/
                     (ctx[2].class ?? "")
             },
@@ -188,7 +188,7 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
                 }
                 set_attributes(div, div_data = get_spread_update(div_levels, [
                     (!current || dirty & /*$$restProps*/
-                        4 && div_class_value !== (div_class_value = `svelte-${/*hash*/
+                        4 && div_class_value !== (div_class_value = `styled-svelte-${/*hash*/
                             ctx2[1]} ` + /*$$restProps*/
                             (ctx2[2].class ?? ""))) && { class: div_class_value },
                     dirty & /*$$restProps*/
@@ -228,7 +228,7 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
 
         const hash = createHash();
         const generateSCSS = (props) => {
-            const scss = `${tag}.svelte-${hash}{${generateStyle(props)}}`;
+            const scss = `${tag}.styled-svelte-${hash}{${generateStyle(props)}}`;
             try {
                 const compiledCss = compileString(scss);
                 return `<style>${scss}</style>`;
