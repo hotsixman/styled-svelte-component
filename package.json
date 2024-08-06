@@ -1,0 +1,25 @@
+{
+  "name": "styled-svelte-component",
+  "version": "0.1.4",
+  "description": "Create style components for svelte",
+  "main": "./index.js",
+  "type": "module",
+  "keywords": [
+    "svelte",
+    "styled",
+    "components",
+    "styled component"
+  ],
+  "author": "hotsixman",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hotsixman/styled-svelte-component.git"
+  },
+  "dependencies": {
+    "svelte": "^4.2.18"
+  }
+}
