@@ -1,6 +1,6 @@
 {
   "name": "styled-svelte-component",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Create style components for svelte",
   "main": "./index.js",
   "type": "module",
@@ -21,6 +21,7 @@
     "url": "git+https://github.com/hotsixman/styled-svelte-component.git"
   },
   "dependencies": {
+    "sass": "^1.77.8",
     "svelte": "^4.2.18"
   }
 }

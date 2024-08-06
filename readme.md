@@ -17,7 +17,7 @@ const SampleDiv = createSSC(
     ({backgroundColor, color}) => `
         background-color:${backgroundColor};
         color: ${color};
-    `, // A function which returns css. You can use props here.
+    `, // A function which returns scss or css. You can use props here.
     ["click"], // Events that you want to use.
 )
 </script>
