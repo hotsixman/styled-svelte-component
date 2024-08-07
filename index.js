@@ -146,16 +146,16 @@ export function createSSC(tag, generateStyle, events) {
         };
     }
     function createHash() {
-        return hashCode(Date.now().toString(16) + tag + JSON.stringify(events));
+        return hashCode(Date.now().toString(16) + tag + JSON.stringify(events) + Math.random());
     }
-    function generateSCSS(props, hash) {
-        const scss = `${tag}.styled-svelte-${hash}{${generateStyle(props)}}`;
+    function generateSass(props, hash) {
+        const sass = `${tag}.styled-svelte-${hash}{${generateStyle(props)}}`;
         try {
-            const compiledCss = compileString(scss);
-            return `<style>${scss}</style>`;
+            const compiledCss = compileString(sass);
+            return `<style>${compiledCss}</style>`;
         }
         catch {
-            return `<style>${scss}</style>`;
+            return `<style>${sass}</style>`;
         }
     }
     function instance($$self, $$props, $$invalidate) {
@@ -171,7 +171,7 @@ export function createSSC(tag, generateStyle, events) {
                 $$invalidate(3, $$scope = $$new_props.$$scope);
         };
         $$self.$$.update = () => {
-            $: $$invalidate(0, css = generateSCSS($$restProps, hash));
+            $: $$invalidate(0, css = generateSass($$restProps, hash));
         };
         if (events) {
             const handlers = [];
@@ -206,7 +206,7 @@ export function createSSC(tag, generateStyle, events) {
                         return add_attribute(key, escape(value));
                     });
                     const html = `<${tag}${attributes.join(' ')}>${$$slots.default(...args)}</${tag}>`;
-                    const css = generateSCSS($$props, hash);
+                    const css = generateSass($$props, hash);
                     return html + css;
                 })[prop];
             }
