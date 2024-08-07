@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { compileString } from 'sass';
-import { SvelteComponent, create_slot, assign, element, set_attributes, insert, update_slot_base, get_all_dirty_from_scope, get_slot_changes, get_spread_update, transition_in, transition_out, detach, compute_rest_props, exclude_internal_props, safe_not_equal, init, listen, stop_propagation, self, trusted, bubble, run_all, HtmlTag, space, empty } from 'svelte/internal';
+import { SvelteComponent, create_slot, assign, element, set_attributes, insert, update_slot_base, get_all_dirty_from_scope, get_slot_changes, get_spread_update, transition_in, transition_out, detach, compute_rest_props, exclude_internal_props, safe_not_equal, init, listen, stop_propagation, self, trusted, bubble, run_all, HtmlTag, space, empty, create_ssr_component, add_attribute, escape } from 'svelte/internal';
 
 export interface StyledComponentEvent {
     name: string;
@@ -70,7 +70,8 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
                 html_anchor = empty();
                 html_tag.a = html_anchor;
             },
-            m(target, anchor) {
+            m(...args) {
+                const [target, anchor] = args;
                 html_tag.m(
 
                     ctx[0],
@@ -139,7 +140,8 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
                 if (default_slot) default_slot.c();
                 set_attributes(div, div_data);
             },
-            m(target, anchor) {
+            m(...args) {
+                const [target, anchor] = args;
                 key_block.m(target, anchor);
                 insert(target, t, anchor);
                 insert(target, div, anchor);
@@ -214,11 +216,30 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
                 if (default_slot) default_slot.d(detaching);
                 mounted = false;
                 run_all(dispose);
+            },
+            l(...args) {
+                key_block.c();
+                t = empty()
+                div = element(tag);
+                if (default_slot) default_slot.c();
+                set_attributes(div, div_data);
             }
         };
     }
 
-    const createHash = () => hashCode(Date.now().toString(16)+tag+JSON.stringify(events))
+    function createHash() {
+        return hashCode(Date.now().toString(16) + tag + JSON.stringify(events));
+    }
+    function generateSCSS(props, hash) {
+        const scss = `${tag}.styled-svelte-${hash}{${generateStyle(props)}}`;
+        try {
+            const compiledCss = compileString(scss);
+            return `<style>${scss}</style>`;
+        }
+        catch {
+            return `<style>${scss}</style>`
+        }
+    }
 
     function instance($$self, $$props, $$invalidate) {
         let css;
@@ -227,16 +248,6 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
         let { $$slots: slots = {}, $$scope } = $$props;
 
         const hash = createHash();
-        const generateSCSS = (props) => {
-            const scss = `${tag}.styled-svelte-${hash}{${generateStyle(props)}}`;
-            try {
-                const compiledCss = compileString(scss);
-                return `<style>${scss}</style>`;
-            }
-            catch{
-                return `<style>${scss}</style>`
-            }
-        }
 
         $$self.$$set = ($$new_props) => {
             $$props = assign(assign({}, $$props), exclude_internal_props($$new_props));
@@ -244,7 +255,7 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
             if ("$$scope" in $$new_props) $$invalidate(3, $$scope = $$new_props.$$scope);
         };
         $$self.$$.update = () => {
-            $: $$invalidate(0, css = generateSCSS($$restProps));
+            $: $$invalidate(0, css = generateSCSS($$restProps, hash));
         };
 
         if (events) {
@@ -268,7 +279,66 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
         }
     }
 
-    return StyledComponent
+    const ProxyStyledComponent = new Proxy(StyledComponent, {
+        construct(target, prop, receiver) {
+            return Reflect.construct(target, prop, receiver)
+        },
+        get(target, prop, receiver) {
+            if (prop === "render" || prop === "$$render") {
+                return create_ssr_component((...args) => {
+                    const [$$result, $$props, $$bindings, $$slots] = args;
+                    const hash = createHash();
+                    $$props.class = `styled-svelte-${hash} ` + ($$props.class || '');
+                    const attributes = Object.entries($$props).map(([key, value]) => {
+                        return add_attribute(key, escape(value))
+                    })
+                    
+                    const html = `<${tag}${attributes.join(' ')}>${$$slots.default(...args)}</${tag}>`;
+                    const css = generateSCSS($$props, hash);
+                    return html+css;
+                })[prop]
+            }
+            else {
+                const ob = Reflect.get(target, prop, receiver)
+                return ob
+            }
+        },
+        apply(target, a, b) {
+            return Reflect.apply(traget, a, b)
+        },
+        set(...args) {
+            return Reflect.set(...args);
+        },
+        has(...args) {
+            return Reflect.has(...args);
+        },
+        deleteProperty(...args) {
+            return Reflect.deleteProperty(...args);
+        },
+        getPrototypeOf(...args) {
+            return Reflect.getPrototypeOf(...args);
+        },
+        setPrototypeOf(...args) {
+            return Reflect.setPrototypeOf(...args);
+        },
+        isExtensible(...args) {
+            return Reflect.isExtensible(...args);
+        },
+        preventExtensions(...args) {
+            return Reflect.preventExtensions(...args);
+        },
+        defineProperty(...args) {
+            return Reflect.defineProperty(...args);
+        },
+        getOwnPropertyDescriptor(...args) {
+            return Reflect.getOwnPropertyDescriptor(...args);
+        },
+        ownKeys(...args) {
+            return Reflect.ownKeys(...args);
+        }
+    })
+
+    return ProxyStyledComponent
 }
 
 export {
