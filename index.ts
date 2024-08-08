@@ -234,7 +234,7 @@ export function createSSC(tag: keyof HTMLElementTagNameMap, generateStyle: (prop
         const sass = `${tag}.styled-svelte-${hash}{${generateStyle(props)}}`;
         try {
             const compiledCss = compileString(sass);
-            return `<style>${compiledCss}</style>`;
+            return `<style>${compiledCss.css}</style>`;
         }
         catch {
             return `<style>${sass}</style>`
