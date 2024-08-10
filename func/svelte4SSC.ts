@@ -6,13 +6,15 @@ export function createSSC(tagName: string, generateStyle: (props: Record<string,
             const props = argArray[0].props;
             props.tagName = tagName;
             props.generateStyle = generateStyle;
-            const object = Reflect.construct(target, argArray, newTarget);
+            const componentObject = Reflect.construct(target, argArray, newTarget);
+
+            let addedEventListeners = false;
             const events: {eventName: keyof HTMLElementEventMap, handler: EventListenerOrEventListenerObject}[] = [];
-            object.$on = (eventName:keyof HTMLElementEventMap, handler: EventListenerOrEventListenerObject) => {
+            componentObject.$on = (eventName:keyof HTMLElementEventMap, handler: EventListenerOrEventListenerObject) => {
                 events.push({eventName, handler})
             }
 
-            const proxyObject = new Proxy(object, {
+            const proxyComponentObject = new Proxy(componentObject, {
                 get(target, key, receiver){
                     const value = Reflect.get(target, key, receiver);
                     if(key === "$$"){
@@ -22,11 +24,12 @@ export function createSSC(tagName: string, generateStyle: (props: Record<string,
                                 if(key === "on_mount"){
                                     const proxyOnMount = new Proxy(value, {
                                         get(...args){
-                                            const thisElement = object.$$.ctx[0] as HTMLElement;
-                                            if(thisElement){
+                                            const thisElement = componentObject.$$.ctx[0] as HTMLElement;
+                                            if(thisElement && !addedEventListeners){
                                                 events.forEach((event) => {
                                                     thisElement.addEventListener(event.eventName, event.handler, true);
-                                                })
+                                                });
+                                                addedEventListeners = true;
                                             }
                                             return Reflect.get(...args)
                                         }
@@ -46,7 +49,7 @@ export function createSSC(tagName: string, generateStyle: (props: Record<string,
                     }
                 }
             })
-            return proxyObject;
+            return proxyComponentObject;
         },
         get(target, key, receiver) {
             const object = Reflect.get(target, key, receiver);
