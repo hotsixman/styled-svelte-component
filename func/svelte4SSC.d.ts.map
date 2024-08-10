@@ -1,1 +1,1 @@
-{"version":3,"file":"svelte4SSC.d.ts","sourceRoot":"","sources":["svelte4SSC.ts"],"names":[],"mappings":"AAEA,wBAAgB,SAAS,CAAC,OAAO,EAAE,MAAM,EAAE,aAAa,EAAE,CAAC,KAAK,EAAE,MAAM,CAAC,MAAM,EAAE,GAAG,CAAC,KAAK,MAAM,sCAuE/F;AAED,eAAe,SAAS,CAAC"}
+{"version":3,"file":"svelte4SSC.d.ts","sourceRoot":"","sources":["svelte4SSC.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,+BAA+B,EAAE,MAAM,YAAY,CAAC;AAE7D,wBAAgB,SAAS,CAAC,KAAK,SAAS,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,EAAE,OAAO,EAAE,MAAM,EAAE,aAAa,EAAE,CAAC,KAAK,EAAE,MAAM,CAAC,MAAM,EAAE,GAAG,CAAC,KAAK,MAAM,0CAuEtI;AAED,eAAe,SAAS,CAAC"}

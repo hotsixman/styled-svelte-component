@@ -1,6 +1,7 @@
 import Svelte5Component from "./Svelte5Component.svelte";
+import { PropsTypeDefinedStyledComponent } from "./types.js";
 
-export function createSSC(tagName: string, generateStyle: (props: Record<string, any>) => string) {
+export function createSSC<Props extends Record<string, unknown>>(tagName: string, generateStyle: (props: Record<string, any>) => string) {
     const StyledComponent = new Proxy(Svelte5Component, {
         apply(target, thisArg, argArray) {
             const props = argArray[1];
@@ -13,7 +14,7 @@ export function createSSC(tagName: string, generateStyle: (props: Record<string,
         }
     })
 
-    return StyledComponent as unknown as ConstructorOfATypedSvelteComponent;
+    return StyledComponent as unknown as PropsTypeDefinedStyledComponent<Props>
 }
 
 export default createSSC;

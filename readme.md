@@ -11,10 +11,10 @@ You can create a styled component for svelte, which is responsive to props, so y
 ### For svelte 4
 
 ```svelte
-<script>
+<script lang="ts">
 import createSSC from 'styled-svelte-component/svelte4';
 
-const SampleDiv = createSSC(
+const SampleDiv = createSSC<{color:string}>( //You can set types of props here.
     'div', //tag name
     ({backgroundColor, color}) => `
         background-color:${backgroundColor};
@@ -31,10 +31,10 @@ const SampleDiv = createSSC(
 ### For svelte 5
 
 ```svelte
-<script>
+<script lang="ts">
 import createSSC from 'styled-svelte-component/svelte5';
 
-const SampleDiv = createSSC(
+const SampleDiv = createSSC<{color:string}>( //You can set types of props here.
     'div', //tag name
     ({backgroundColor, color}) => `
         background-color:${backgroundColor};
