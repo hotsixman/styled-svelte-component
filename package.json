@@ -1,11 +1,11 @@
 {
   "name": "styled-svelte-component",
-  "version": "0.7.0",
+  "version": "0.7.5",
   "description": "Create style components for svelte",
-  "exports":{
+  "exports": {
     ".": "./index.js",
-    "./svelte4": "./func/svelte4SSC.js",
-    "./svelte5": "./func/svelte5SSC.js"
+    "./svelte4": "./src/svelte4SSC.js",
+    "./svelte5": "./src/svelte5SSC.js"
   },
   "type": "module",
   "license": "MIT",
@@ -18,14 +18,17 @@
   "author": "hotsixman",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hotsixman/styled-svelte-component.git"
   },
   "dependencies": {
-    "sass": "^1.77.8",
-    "svelte": "^4.2.18"
+    "sass": "^1.77.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
   }
 }

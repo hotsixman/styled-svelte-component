@@ -1,3 +1,4 @@
+//@ts-nocheck
 import Svelte5Component from "./Svelte5Component.svelte";
 import { PropsTypeDefinedStyledComponent } from "./types.js";
 

@@ -1,2 +1,10 @@
+**/*.js
+**/*.d.ts
+**/*.d.ts.map
+**/*.js.map
 node_modules
 tests
+
+*.js
+*.d.ts
+*.d.ts.map

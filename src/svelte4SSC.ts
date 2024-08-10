@@ -1,50 +1,56 @@
+//@ts-nocheck
 import Svelte4Component from "./Svelte4Component.svelte";
-export function createSSC(tagName, generateStyle) {
+import { PropsTypeDefinedStyledComponent } from "./types.js";
+
+export function createSSC<Props extends Record<string, unknown>>(tagName: string, generateStyle: (props: Record<string, any>) => string) {
     const StyledComponent = new Proxy(Svelte4Component, {
         construct(target, argArray, newTarget) {
             const props = argArray[0].props;
             props.tagName = tagName;
             props.generateStyle = generateStyle;
             const componentObject = Reflect.construct(target, argArray, newTarget);
+
             let addedEventListeners = false;
-            const events = [];
-            componentObject.$on = (eventName, handler) => {
-                events.push({ eventName, handler });
-            };
+            const events: {eventName: keyof HTMLElementEventMap, handler: EventListenerOrEventListenerObject}[] = [];
+            componentObject.$on = (eventName:keyof HTMLElementEventMap, handler: EventListenerOrEventListenerObject) => {
+                events.push({eventName, handler})
+            }
+
             const proxyComponentObject = new Proxy(componentObject, {
-                get(target, key, receiver) {
+                get(target, key, receiver){
                     const value = Reflect.get(target, key, receiver);
-                    if (key === "$$") {
+                    if(key === "$$"){
                         const proxy$$ = new Proxy(value, {
-                            get(target, key, receiver) {
+                            get(target, key, receiver){
                                 const value = Reflect.get(target, key, receiver);
-                                if (key === "on_mount") {
+                                if(key === "on_mount"){
                                     const proxyOnMount = new Proxy(value, {
-                                        get(...args) {
-                                            const thisElement = componentObject.$$.ctx[0];
-                                            if (thisElement && !addedEventListeners) {
+                                        get(...args){
+                                            const thisElement = componentObject.$$.ctx[0] as HTMLElement;
+                                            if(thisElement && !addedEventListeners){
                                                 events.forEach((event) => {
                                                     thisElement.addEventListener(event.eventName, event.handler, true);
                                                 });
                                                 addedEventListeners = true;
                                             }
-                                            return Reflect.get(...args);
+                                            return Reflect.get(...args)
                                         }
-                                    });
+                                    })
                                     return proxyOnMount;
                                 }
-                                else {
+                                else{
                                     return value;
                                 }
                             }
                         });
+
                         return proxy$$;
                     }
-                    else {
+                    else{
                         return value;
                     }
                 }
-            });
+            })
             return proxyComponentObject;
         },
         get(target, key, receiver) {
@@ -57,15 +63,16 @@ export function createSSC(tagName, generateStyle) {
                         props.generateStyle = generateStyle;
                         return Reflect.apply(target, thisArg, argArray);
                     },
-                });
+                })
                 return objectProxy;
             }
             else {
                 return object;
             }
         }
-    });
-    return StyledComponent;
+    })
+
+    return StyledComponent as PropsTypeDefinedStyledComponent<Props>;
 }
+
 export default createSSC;
-//# sourceMappingURL=svelte4SSC.js.map
