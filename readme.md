@@ -47,3 +47,37 @@ const SampleDiv = createSSC<{color:string}>( //You can set types of props here.
     Snom is Ass
 </SampleDiv>
 ```
+
+### Common Style
+
+For example in Svelte 4: 
+
+```svelte
+<script lang="ts">
+import createSSC from 'styled-svelte-component/svelte4';
+
+const SampleDiv = createSSC<{color:string}, {hoverColor: string}>( //You can set types of props here.
+    'div', //tag name
+    ({backgroundColor}) => `
+        background-color: ${backgroundColor};
+    `, // A function which returns scss or css. You can use props here.
+    ({hoverColor}) => `
+        &:hover{
+            color: ${hoverColor};
+        }
+    ` // Style for all `SampleDiv` components;
+)
+</script>
+
+<SampleDiv.common hoverColor="purple"/>
+
+<!-- Red background color and purple text color when hover -->
+<SampleDiv backgroundColor="red">
+    Snom is Ass
+</SampleDiv>
+
+<!-- Blue background color and purple text color when hover -->
+<SampleDiv backgroundColor="blue">
+    Snom is Ass
+</SampleDiv>
+```
