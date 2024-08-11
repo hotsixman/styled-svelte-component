@@ -38,6 +38,12 @@ export function createSSC<Props extends Record<string, unknown>, CommonProps ext
         });
         StyledComponent.common = CommonStyleComponent;
     }
+    
+    StyledComponent.styledComponentData = {
+        tagName,
+        generateStyle,
+        generateCommonStyle
+    }
 
     return StyledComponent;
 }

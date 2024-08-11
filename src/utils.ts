@@ -23,7 +23,7 @@ export function generateSASS(generateStyle: StyleGenerator<Record<string, unknow
     const style = generateStyle(restProps);
     const css = `${tagName}.${`styled-svelte-${hash}`}{${style}}`;
     try {
-        const sass = compileString(css);
+        const sass = compileString(css, {silenceDeprecations: ['mixed-decls']});
         return sass.css;
     } catch {
         return css;
@@ -33,7 +33,7 @@ export function generateCommonSASS(generateStyle: StyleGenerator<Record<string, 
     const style = generateStyle(restProps);
     const css = `${tagName}.${`common-styled-svelte-${hash}`}{${style}}`;
     try {
-        const sass = compileString(css);
+        const sass = compileString(css, {silenceDeprecations: ['mixed-decls']});
         return sass.css;
     } catch {
         return css;

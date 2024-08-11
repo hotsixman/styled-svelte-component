@@ -1,16 +1,16 @@
 {
   "name": "styled-svelte-component",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Create style components for svelte",
   "exports": {
-    ".": "./index.js",
+    ".": "./dist/index.js",
     "./svelte4": {
-      "types": "./src/svelte4SSC.d.ts",
-      "svelte": "./src/svelte4SSC.js"
+      "types": "./dist/src/svelte4SSC.d.ts",
+      "svelte": "./dist/src/svelte4SSC.js"
     },
     "./svelte5": {
-      "types": "./src/svelte5SSC.d.ts",
-      "svelte": "./src/svelte5SSC.js"
+      "types": "./dist/src/svelte5SSC.d.ts",
+      "svelte": "./dist/src/svelte5SSC.js"
     }
   },
   "type": "module",

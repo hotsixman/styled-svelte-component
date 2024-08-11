@@ -12,6 +12,50 @@ export function createSSC<Props extends Record<string, unknown>, CommonProps ext
         commonHash = createHash(tagName, { tagName: tagName })
     }
 
+    const styledComponentData = {
+        tagName,
+        generateStyle,
+        generateCommonStyle
+    }
+
+    let common = undefined;
+    if (generateCommonStyle) {
+        const CommonStyleComponent = new Proxy(Svelte4CommonStyle, {
+            construct(target, argArray, newTarget) {
+                const props = argArray[0].props ?? {};
+                props.tagName = tagName;
+                props.generateCommonStyle = generateCommonStyle;
+                props.commonHash = commonHash;
+                argArray[0].props = props;
+
+                const componentObject = Reflect.construct(target, argArray, newTarget);
+                return componentObject;
+            },
+            get(target, key, receiver) {
+                const object = Reflect.get(target, key, receiver);
+                if (key === "$$render" || key === "render") {
+                    const objectProxy = new Proxy(object, {
+                        apply(target, thisArg, argArray) {
+                            const props = argArray[1] ?? {};
+                            props.tagName = tagName;
+                            props.generateCommonStyle = generateCommonStyle;
+                            props.commonHash = commonHash;
+                            argArray[1] = props;
+
+                            return Reflect.apply(target, thisArg, argArray);
+                        },
+                    })
+                    return objectProxy;
+                }
+                else {
+                    return object;
+                }
+            }
+        });
+
+        common = CommonStyleComponent;
+    }
+
     const StyledComponent = new Proxy(Svelte4Component, {
         construct(target, argArray, newTarget) {
             const props = argArray[0].props ?? {};
@@ -81,48 +125,17 @@ export function createSSC<Props extends Record<string, unknown>, CommonProps ext
                 })
                 return objectProxy;
             }
+            else if(key === "styledComponentData"){
+                return styledComponentData;
+            }
+            else if(key === "common"){
+                return common;
+            }
             else {
                 return object;
             }
         }
     })
-
-    if (generateCommonStyle) {
-        const CommonStyleComponent = new Proxy(Svelte4CommonStyle, {
-            construct(target, argArray, newTarget) {
-                const props = argArray[0].props ?? {};
-                props.tagName = tagName;
-                props.generateCommonStyle = generateCommonStyle;
-                props.commonHash = commonHash;
-                argArray[0].props = props;
-
-                const componentObject = Reflect.construct(target, argArray, newTarget);
-                return componentObject;
-            },
-            get(target, key, receiver) {
-                const object = Reflect.get(target, key, receiver);
-                if (key === "$$render" || key === "render") {
-                    const objectProxy = new Proxy(object, {
-                        apply(target, thisArg, argArray) {
-                            const props = argArray[1] ?? {};
-                            props.tagName = tagName;
-                            props.generateCommonStyle = generateCommonStyle;
-                            props.commonHash = commonHash;
-                            argArray[1] = props;
-
-                            return Reflect.apply(target, thisArg, argArray);
-                        },
-                    })
-                    return objectProxy;
-                }
-                else {
-                    return object;
-                }
-            }
-        });
-
-        StyledComponent.common = CommonStyleComponent;
-    }
 
     return StyledComponent as PropsTypeDefinedStyledComponent<Props>;
 }

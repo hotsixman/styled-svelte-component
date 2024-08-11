@@ -9,3 +9,5 @@ tests
 *.js.map
 *.d.ts
 *.d.ts.map
+
+dist
