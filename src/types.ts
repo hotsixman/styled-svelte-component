@@ -4,7 +4,7 @@ export type PropsTypeDefinedStyledComponentWithCommonStyle<Props extends Record<
 export type StyleGenerator<Props extends Record<string, any>> = (props: Props & Record<string, unknown>) => string
 
 export type StyledComponentData<Props extends Record<string, unknown>, CommonProps extends Record<string, unknown> | undefined> = {
-    tagName: string;
-    generateStyle: StyleGenerator<Props>,
-    generateCommonStyle: CommonProps extends undefined ? undefined : StyleGenerator<CommonProps>
+    readonly tagName: string;
+    readonly generateStyle: StyleGenerator<Props>,
+    readonly generateCommonStyle: CommonProps extends undefined ? undefined : StyleGenerator<CommonProps>
 }
