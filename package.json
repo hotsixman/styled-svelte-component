@@ -1,6 +1,6 @@
 {
   "name": "styled-svelte-component",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Create style components for svelte",
   "exports": {
     ".": "./dist/index.js",
@@ -25,7 +25,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build && npm run copy-files",
+    "copy-files": "copyfiles -u 1 src/*.svelte dist/src"
   },
   "repository": {
     "type": "git",
