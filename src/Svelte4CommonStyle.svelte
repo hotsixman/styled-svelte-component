@@ -14,11 +14,20 @@
 
     $: tagName = $$props.tagName as string;
     $: commonHash = $$props.commonHash as string;
-    $: generateCommonStyle = $$props.generateCommonStyle as StyleGenerator<Record<string, unknown>>;
+    $: generateCommonStyle = $$props.generateCommonStyle as StyleGenerator<
+        Record<string, unknown>
+    >;
     $: restProps = getRestProps($$props);
-    $: sass = generateCommonSASS(generateCommonStyle, tagName, commonHash, restProps);
+    $: sass = generateCommonSASS(
+        generateCommonStyle,
+        tagName,
+        commonHash,
+        restProps,
+    );
 </script>
 
-<svelte:element this="style">
-    {sass}
-</svelte:element>
+<svelte:head>
+    <svelte:element this="style">
+        {@html sass}
+    </svelte:element>
+</svelte:head>

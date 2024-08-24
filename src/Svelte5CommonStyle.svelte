@@ -25,6 +25,8 @@
     );
 </script>
 
-<svelte:element this={"style"}>
-    {sass}
-</svelte:element>
+<svelte:head>
+    <svelte:element this={"style"}>
+        {@html sass}
+    </svelte:element>
+</svelte:head>

@@ -31,9 +31,11 @@
     let sass = $derived.by(() => generateSASS(generateStyle, tagName, hash, restProps));
 </script>
 
-<svelte:element this={"style"}>
-    {sass}
-</svelte:element>
+<svelte:head>
+    <svelte:element this={"style"}>
+        {@html sass}
+    </svelte:element>
+</svelte:head>
 
 
 <svelte:element this={tagName} class={className} {...rest}>
