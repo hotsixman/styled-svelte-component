@@ -32,9 +32,7 @@
 </script>
 
 <svelte:head>
-    <svelte:element this={"style"}>
-        {@html sass}
-    </svelte:element>
+    {@html `<style>${sass}</style>`}
 </svelte:head>
 
 
