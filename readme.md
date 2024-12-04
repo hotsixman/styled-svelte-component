@@ -1,7 +1,7 @@
 # Styled Svelte Component
 
 > [!WARNING]  
-> There are some problems in svelte5.
+> There are some problems in svelte5. Use [styled-svelte5](https://github.com/hotsixman/styled-svelte5) if you are using svelte5.
 
 You can create a styled component for svelte, which is responsive to props, so you can create a component that changes style depending on the situation. You can also use the event handler.
 
