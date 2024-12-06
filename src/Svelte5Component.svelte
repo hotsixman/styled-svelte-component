@@ -34,8 +34,3 @@
 <svelte:head>
     {@html `<style>${sass}</style>`}
 </svelte:head>
-
-
-<svelte:element this={tagName} class={className} {...rest}>
-    {@render children?.()}
-</svelte:element>
